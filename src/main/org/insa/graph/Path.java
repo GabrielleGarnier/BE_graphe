@@ -2,6 +2,7 @@ package org.insa.graph;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -210,11 +211,15 @@ public class Path {
      * 
      * @return Total length of the path (in meters).
      * 
-     * @deprecated Need to be implemented.
      */
     public float getLength() {
-        // TODO:
-        return 0;
+    	float length=0 ;
+    	Iterator<Arc> iter =arcs.iterator(); 
+    	while (iter.hasNext()) {
+    		Arc current = iter.next(); 
+    		length=length+current.getLength(); 
+    	}
+        return length;
     }
 
     /**
@@ -237,12 +242,16 @@ public class Path {
      * on every arc.
      * 
      * @return Minimum travel time to travel this path (in seconds).
-     * 
-     * @deprecated Need to be implemented.
+     *
      */
     public double getMinimumTravelTime() {
-        // TODO:
-        return 0;
+    	float travelTime=0 ;
+    	Iterator<Arc> iter =arcs.iterator(); 
+    	while (iter.hasNext()) {
+    		Arc current = iter.next(); 
+    		travelTime=travelTime+(float)current.getMinimumTravelTime(); 
+    	}
+        return travelTime;
     }
 
 }
