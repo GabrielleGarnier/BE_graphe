@@ -31,12 +31,33 @@ public class Path {
      * @throws IllegalArgumentException If the list of nodes is not valid, i.e. two
      *         consecutive nodes in the list are not connected in the graph.
      * 
-     * @deprecated Need to be implemented.
      */
     public static Path createFastestPathFromNodes(Graph graph, List<Node> nodes)
             throws IllegalArgumentException {
         List<Arc> arcs = new ArrayList<Arc>();
-        // TODO:
+        List<Arc> aTester = new ArrayList<Arc>();
+        Iterator<Node> iter=nodes.iterator(); 
+        float taille=1000000000; 
+        while (iter.hasNext()) {
+        	Node current = iter.next(); 
+        	aTester=current.getSuccessors(); 
+        	Iterator<Arc> iter2 = aTester.iterator(); 
+            boolean found = false; 
+        	while (iter2.hasNext()) {
+        		Arc courant = iter2.next(); 
+        		if (courant.getDestination().equals(current)) {
+        			if (!found) {
+        				found=true; 
+        				taille=courant.getLength(); 
+        				arcs.add(courant); 
+        			} else if (taille>courant.getLength()) {
+        				arcs.remove(arcs.size()-1); 
+        				arcs.add(courant);
+        				taille=courant.getLength(); 
+        			}
+        		}
+        	}
+        }
         return new Path(graph, arcs);
     }
 
@@ -51,14 +72,35 @@ public class Path {
      * 
      * @throws IllegalArgumentException If the list of nodes is not valid, i.e. two
      *         consecutive nodes in the list are not connected in the graph.
-     * 
-     * @deprecated Need to be implemented.
+
      */
     public static Path createShortestPathFromNodes(Graph graph, List<Node> nodes)
-            throws IllegalArgumentException {
-        List<Arc> arcs = new ArrayList<Arc>();
-        // TODO:
-        return new Path(graph, arcs);
+    		throws IllegalArgumentException {
+    	
+    	List<Arc> arcs = new ArrayList<Arc>(); 
+    	List<Arc> aTester = new ArrayList<Arc>();
+    	Iterator<Node> iter=nodes.iterator(); 
+    	Arc arc=null;  
+    	float taille=1000000000; 
+    	while (iter.hasNext()) {
+    		Node current = iter.next(); 
+    		aTester=current.getSuccessors(); 
+    		boolean found = false; 
+    		for (Arc courant : aTester) {
+    			if (courant.getDestination().equals(iter.next())) {
+    				if (taille>courant.getLength()) {
+    					arc=courant; 
+    					taille=courant.getLength(); 
+    				}
+    			}
+    		}
+    		if (arc==null) {
+    			throw new IllegalArgumentException("pas bien"); 
+    		}
+    		arcs.add(arc); 
+
+    	} 
+    	return new Path(graph, arcs);
     }
 
     /**
