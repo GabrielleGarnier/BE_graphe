@@ -2,6 +2,7 @@ package org.insa.graph;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -198,11 +199,27 @@ public class Path {
      * 
      * @return true if the path is valid, false otherwise.
      * 
-     * @deprecated Need to be implemented.
+     *  Need to be implemented.
      */
     public boolean isValid() {
-        // TODO:
-        return false;
+    	boolean valid = false;
+    	Node noot;
+    	valid = isEmpty();
+    	if (!valid) {
+    		valid = (size()==1);
+    	}
+    	if (!valid) {
+    		valid = true;
+    		noot = getOrigin();
+    		Iterator<Arc> iter = arcs.iterator();
+    		while(valid==true & iter.hasNext()) {
+    			Arc current = iter.next();
+    			if (noot!=current.getOrigin()) {valid=false;}
+    			noot=current.getDestination();
+    		}
+    	if (noot!=getDestination()) {valid = false;}
+    	}
+        return valid;
     }
 
     /**
@@ -225,11 +242,10 @@ public class Path {
      * @return Time (in seconds) required to travel this path at the given speed (in
      *         kilometers-per-hour).
      * 
-     * @deprecated Need to be implemented.
+     *  Need to be implemented.
      */
     public double getTravelTime(double speed) {
-        // TODO:
-        return 0;
+    	return getLength() * 3600.0 / (speed * 1000.0);
     }
 
     /**
