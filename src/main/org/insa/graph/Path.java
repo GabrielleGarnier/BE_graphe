@@ -34,31 +34,41 @@ public class Path {
      */
     public static Path createFastestPathFromNodes(Graph graph, List<Node> nodes)
             throws IllegalArgumentException {
-        List<Arc> arcs = new ArrayList<Arc>();
-        List<Arc> aTester = new ArrayList<Arc>();
-        Iterator<Node> iter=nodes.iterator(); 
-        float taille=1000000000; 
-        while (iter.hasNext()) {
-        	Node current = iter.next(); 
-        	aTester=current.getSuccessors(); 
-        	Iterator<Arc> iter2 = aTester.iterator(); 
-            boolean found = false; 
-        	while (iter2.hasNext()) {
-        		Arc courant = iter2.next(); 
-        		if (courant.getDestination().equals(current)) {
-        			if (!found) {
-        				found=true; 
-        				taille=courant.getLength(); 
-        				arcs.add(courant); 
-        			} else if (taille>courant.getLength()) {
-        				arcs.remove(arcs.size()-1); 
-        				arcs.add(courant);
-        				taille=courant.getLength(); 
-        			}
-        		}
-        	}
-        }
-        return new Path(graph, arcs);
+    	Path result;
+    	Iterator<Node> iter=nodes.iterator();
+    	if(nodes.size()==0) {
+    		result = new Path(graph);
+    	} else if (nodes.size()==1) {
+    		result = new Path(graph, iter.next());
+    	} else {
+	    	List<Arc> arcs = new ArrayList<Arc>(); 
+	    	List<Arc> aTester = new ArrayList<Arc>();
+	    	 
+	    	Arc arc;  
+	    	double vitesse=Double.MAX_VALUE;
+	    	Node current = iter.next();
+	    	while (iter.hasNext()) { 
+	    		arc=null;
+	    		vitesse=Double.MAX_VALUE;
+	    		Node suivant = iter.next();
+	    		aTester=current.getSuccessors();
+	    		for (Arc courant : aTester) {
+	    			if (courant.getDestination().equals(suivant)) {
+	    				if (vitesse>courant.getMinimumTravelTime()) {
+	    					arc=courant; 
+	    					vitesse=courant.getMinimumTravelTime(); 
+	    				}
+	    			}
+	    		}
+	    		if (arc==null) {
+	    			throw new IllegalArgumentException("pas bien"); 
+	    		}
+	    		arcs.add(arc); 
+	    		current=suivant;
+	    	} 
+	    	result = new Path(graph, arcs);
+    	}
+    	return result;
     }
 
     /**
@@ -77,30 +87,40 @@ public class Path {
     public static Path createShortestPathFromNodes(Graph graph, List<Node> nodes)
     		throws IllegalArgumentException {
     	
-    	List<Arc> arcs = new ArrayList<Arc>(); 
-    	List<Arc> aTester = new ArrayList<Arc>();
-    	Iterator<Node> iter=nodes.iterator(); 
-    	Arc arc=null;  
-    	float taille=1000000000; 
-    	while (iter.hasNext()) {
-    		Node current = iter.next(); 
-    		aTester=current.getSuccessors(); 
-    		boolean found = false; 
-    		for (Arc courant : aTester) {
-    			if (courant.getDestination().equals(iter.next())) {
-    				if (taille>courant.getLength()) {
-    					arc=courant; 
-    					taille=courant.getLength(); 
-    				}
-    			}
-    		}
-    		if (arc==null) {
-    			throw new IllegalArgumentException("pas bien"); 
-    		}
-    		arcs.add(arc); 
-
-    	} 
-    	return new Path(graph, arcs);
+    	Path result;
+    	Iterator<Node> iter=nodes.iterator();
+    	if(nodes.size()==0) {
+    		result = new Path(graph);
+    	} else if (nodes.size()==1) {
+    		result = new Path(graph, iter.next());
+    	} else {
+	    	List<Arc> arcs = new ArrayList<Arc>(); 
+	    	List<Arc> aTester = new ArrayList<Arc>(); 
+	    	Arc arc;  
+	    	float taille=Float.MAX_VALUE;
+	    	Node current = iter.next();
+	    	while (iter.hasNext()) { 
+	    		arc=null;
+	    		taille=Float.MAX_VALUE;
+	    		Node suivant = iter.next();
+	    		aTester=current.getSuccessors();
+	    		for (Arc courant : aTester) {
+	    			if (courant.getDestination().equals(suivant)) {
+	    				if (taille>courant.getLength()) {
+	    					arc=courant; 
+	    					taille=courant.getLength(); 
+	    				}
+	    			}
+	    		}
+	    		if (arc==null) {
+	    			throw new IllegalArgumentException("pas bien"); 
+	    		}
+	    		arcs.add(arc); 
+	    		current=suivant;
+	    	}
+	    	result = new Path(graph, arcs);
+    	}
+    	return result;
     }
 
     /**
