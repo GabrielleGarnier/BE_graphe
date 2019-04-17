@@ -9,7 +9,7 @@
 
 package org.insa.algo.utils;
 
-import java.util.ArrayList;
+import java.util.*;
 
 /**
  * Implements a binary heap. Note that all "matching" is based on the compareTo
@@ -143,8 +143,43 @@ public class BinaryHeap<E extends Comparable<E>> implements PriorityQueue<E> {
     }
 
     @Override
-    public void remove(E x) throws ElementNotFoundException {
-        // TODO:
+    //attention peut poser des problèmes de complexités. 
+    //complexité=o(nlogn)
+    /*public void remove(E x) throws ElementNotFoundException {
+    	BinaryHeap<E> copy = new BinaryHeap<E>(this);
+    	boolean found =false;
+    	while (!this.isEmpty()) {
+        	this.deleteMin(); }
+        while (!copy.isEmpty()) {
+        	E el=copy.deleteMin();
+            if(!(el==x)) {this.insert(el);}
+            else {found=true;}
+        }
+        if(!found) {throw new ElementNotFoundException(x);}
+    }*/
+    
+    //Complexité o(n) mieux mais pas encore assez
+    public void remove(E x) throws ElementNotFoundException{
+    	ArrayList<E> liste=this.array;  
+    	boolean found=false; 
+    	int i = 0; 
+    	int indexLastItem=this.currentSize-1; 
+    	for (E e : liste) {
+    		if ((!found)&&(i<=indexLastItem)) {
+    			if (e==x) {
+    				found=true; 
+    				this.currentSize--;
+    				
+    				if (i!=indexLastItem) {
+    					this.arraySet(i, this.array.get(indexLastItem));
+    					this.percolateDown(i);
+    					this.percolateUp(i);
+    				}
+    			}
+    		}
+    			i++; 
+    	}
+    	if(!found) {throw new ElementNotFoundException(x);}
     }
 
     @Override

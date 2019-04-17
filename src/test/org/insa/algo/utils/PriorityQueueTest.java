@@ -244,10 +244,11 @@ public abstract class PriorityQueueTest {
     @Test
     public void testDeleteThenRemove() {
         Assume.assumeFalse(queue.isEmpty());
+        
         while (!queue.isEmpty()) {
-            MutableInteger min = queue.deleteMin();
+        	MutableInteger min = queue.deleteMin();
             try {
-                queue.remove(min);
+            	queue.remove(min);
                 fail("Expected exception " + ElementNotFoundException.class.getName());
             }
             catch (ElementNotFoundException e) {
