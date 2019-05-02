@@ -1,4 +1,4 @@
-package org.insa.graph;
+	package org.insa.graph;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -205,28 +205,28 @@ public class Path {
      * @return Graph containing the path.
      */
     public Graph getGraph() {
-        return graph;
+        return this.graph;
     }
 
     /**
      * @return First node of the path.
      */
     public Node getOrigin() {
-        return origin;
+        return this.origin;
     }
 
     /**
      * @return Last node of the path.
      */
     public Node getDestination() {
-        return arcs.get(arcs.size() - 1).getDestination();
+        return this.arcs.get(this.arcs.size() - 1).getDestination();
     }
 
     /**
      * @return List of arcs in the path.
      */
     public List<Arc> getArcs() {
-        return Collections.unmodifiableList(arcs);
+        return Collections.unmodifiableList(this.arcs);
     }
 
     /**
@@ -273,13 +273,13 @@ public class Path {
     	if (!valid) {
     		valid = true;
     		noot = getOrigin();
-    		Iterator<Arc> iter = arcs.iterator();
+    		Iterator<Arc> iter = this.arcs.iterator();
     		while(valid==true & iter.hasNext()) {
     			Arc current = iter.next();
     			if (noot!=current.getOrigin()) {valid=false;}
     			noot=current.getDestination();
     		}
-    	if (noot!=getDestination()) {valid = false;}
+    	if (noot!=this.getDestination()) {valid = false;}
     	}
         return valid;
     }
@@ -292,7 +292,7 @@ public class Path {
      */
     public float getLength() {
     	float length=0 ;
-    	Iterator<Arc> iter =arcs.iterator(); 
+    	Iterator<Arc> iter =this.arcs.iterator(); 
     	while (iter.hasNext()) {
     		Arc current = iter.next(); 
     		length=length+current.getLength(); 
@@ -311,7 +311,7 @@ public class Path {
      *  Need to be implemented.
      */
     public double getTravelTime(double speed) {
-    	return getLength() * 3600.0 / (speed * 1000.0);
+    	return this.getLength() * 3600.0 / (speed * 1000.0);
     }
 
     /**
@@ -323,7 +323,7 @@ public class Path {
      */
     public double getMinimumTravelTime() {
     	float travelTime=0 ;
-    	Iterator<Arc> iter =arcs.iterator(); 
+    	Iterator<Arc> iter =this.arcs.iterator(); 
     	while (iter.hasNext()) {
     		Arc current = iter.next(); 
     		travelTime=travelTime+(float)current.getMinimumTravelTime(); 
