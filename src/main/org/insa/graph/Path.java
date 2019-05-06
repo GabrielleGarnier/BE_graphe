@@ -118,7 +118,7 @@ public class Path {
 	    		arcs.add(arc); 
 	    		current=suivant;
 	    	}
-	    	result = new Path(graph, arcs);
+	    	result = new Path(graph,arcs);
     	}
     	return result;
     }
