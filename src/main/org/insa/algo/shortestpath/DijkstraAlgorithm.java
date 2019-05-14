@@ -20,7 +20,6 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
 	protected ShortestPathSolution doRun() {
 		ShortestPathData data = getInputData();
 		ShortestPathSolution solution = null;
-		// TODO:
 		int nbNodes=data.getGraph().size(); 
 		BinaryHeap<Label> tas=new BinaryHeap<Label>();
 		Label[] labels=new Label[nbNodes];
@@ -33,13 +32,16 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
 		int idorigin=data.getOrigin().getId(); 
 		labels[idorigin].setCost(0); 
 		tas.insert(labels[idorigin]); 
-		System.out.println("taille tas début : "+tas.size());
+		notifyOriginProcessed(data.getOrigin());
+		//System.out.println("taille tas début : "+tas.size());
 
 
 		boolean tousMarque = false;
 		Label courant;
 		List<Arc> succesors = new ArrayList<Arc>();
+		int iter=0;
 		while(!tousMarque && !tas.isEmpty()) {
+			iter++;
 			tousMarque=true;
 			int l=0;
 			while(l<nbNodes && tousMarque) {
@@ -47,52 +49,61 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
 				l++;
 			}
 			if (!tousMarque) {
-				
+
 				courant=tas.deleteMin();
 				courant.setMarque(true);
-				System.out.println("taille tas apres nouveau node : "+tas.size());
-				succesors=courant.getSommetCourant().getSuccessors();
-				System.out.println("taille successeurs" + succesors.size());
-				for (Arc currentSuc : succesors) {
-					System.out.println("arc = "+ currentSuc);
-					int idcurrentSuc=currentSuc.getDestination().getId();
-					if(!labels[idcurrentSuc].isMarque()) {
-						
-						if (labels[idcurrentSuc].getCost()>(courant.getCost()+currentSuc.getLength())) {
-							labels[idcurrentSuc].setCost(courant.getCost()+currentSuc.getLength());
-							tas.insert(labels[idcurrentSuc]);
-							System.out.println("taille tas insertion : "+tas.size());
-							labels[idcurrentSuc].setPere(currentSuc);
+				if (courant.getSommetCourant()==data.getDestination()) {
+					tousMarque=true;
+				} else {
+					notifyNodeMarked(courant.getSommetCourant());
+					System.out.println(courant.getCost());
+					//System.out.println("taille tas apres nouveau node : "+tas.size());
+					succesors=courant.getSommetCourant().getSuccessors();
+					//System.out.println("taille successeurs" + succesors.size());
+					for (Arc currentSuc : succesors) {
+						//System.out.println("arc = "+ currentSuc);
+						int idcurrentSuc=currentSuc.getDestination().getId();
+						if(!labels[idcurrentSuc].isMarque()) {
+							notifyNodeReached(currentSuc.getDestination());
+							if (labels[idcurrentSuc].getCost()>(courant.getCost()+currentSuc.getLength())) {
+								labels[idcurrentSuc].setCost(courant.getCost()+currentSuc.getLength());
+								tas.insert(labels[idcurrentSuc]);
+								//System.out.println("taille tas insertion : "+tas.size());
+								labels[idcurrentSuc].setPere(currentSuc);
+							}
 						}
 					}
 				}
 			}
 		}
-		
 
-        // Destination has no predecessor, the solution is infeasible...
-        if (labels[data.getDestination().getId()].getPere()==null) {
-            solution = new ShortestPathSolution(data, Status.INFEASIBLE);
-        }
-        else {
 
-            // The destination has been found, notify the observers.
-            notifyDestinationReached(data.getDestination());
+		// Destination has no predecessor, the solution is infeasible...
+		if (labels[data.getDestination().getId()].getPere()==null) {
+			solution = new ShortestPathSolution(data, Status.INFEASIBLE);
+		}
+		else {
 
-            // Create the path from the array of predecessors...
-            ArrayList<Arc> arcs = new ArrayList<>();
-            Arc arc = labels[data.getDestination().getId()].getPere();
-            while (arc != null) {
-                arcs.add(arc);
-                arc = labels[arc.getOrigin().getId()].getPere();
-            }
+			// The destination has been found, notify the observers.
+			notifyDestinationReached(data.getDestination());
 
-            // Reverse the path...
-            Collections.reverse(arcs);
+			System.out.println("nb d'iterations de l'algorithme:"+iter);
 
-            // Create the final solution.
-            solution = new ShortestPathSolution(data, Status.OPTIMAL, new Path(data.getGraph(), arcs));
-        }
+			// Create the path from the array of predecessors...
+			ArrayList<Arc> arcs = new ArrayList<>();
+			Arc arc = labels[data.getDestination().getId()].getPere();
+			while (arc != null) {
+				arcs.add(arc);
+				arc = labels[arc.getOrigin().getId()].getPere();
+			}
+			System.out.println("nb arcs plus court chemin"+arcs.size());
+			// Reverse the path...
+			Collections.reverse(arcs);
+
+			// Create the final solution.
+			solution = new ShortestPathSolution(data, Status.OPTIMAL, new Path(data.getGraph(), arcs));
+
+		}
 
 
 		return solution;
