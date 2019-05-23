@@ -20,7 +20,7 @@ public class Label implements Comparable<Label> {
 
 
 	public int compareTo(Label autre) {
-		return Float.compare(this.cost,autre.cost);
+		return Float.compare(this.getTotalCost(),autre.getTotalCost());
 	}
 
 	public float getCost() {
@@ -46,6 +46,7 @@ public class Label implements Comparable<Label> {
 		this.marque = marque;
 	}
 	
-
-
+	public float getTotalCost() {
+		return this.cost;
+	}
 }
