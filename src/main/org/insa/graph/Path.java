@@ -346,7 +346,6 @@ public class Path {
 				eq=false;
 			}
 		}
-		System.out.println("methode equals appelée! ");
 		return eq;
 	}
 

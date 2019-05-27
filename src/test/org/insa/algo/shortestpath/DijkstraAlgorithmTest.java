@@ -113,7 +113,7 @@ public class DijkstraAlgorithmTest {
 
 	//String basePath = "/home/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Maps/";
 	String graphPath = "/C:/Users/Jeanne/Desktop/insa/3A/graphes/BE_graphe/";
-	String[] graphNames = { "carre-dense","chile" };
+	String[] graphNames = { "carre","insa" };
 	
 	@Test
 	public void test_cartes () throws IOException {
@@ -131,28 +131,33 @@ public class DijkstraAlgorithmTest {
 		ShortestPathData data;
 
 		for (int i =0; i<2; i++) {
-			//tests carre dense
-			/*data = new ShortestPathData (graphs.get(0),graphs.get(0).get(129880),graphs.get(0).get(198627), filters.get(i));
+			//tests carre
+			data = new ShortestPathData (graphs.get(0),graphs.get(0).get(23),graphs.get(0).get(10), filters.get(i));
 			dij = new DijkstraAlgorithm(dataOne);
 			solDij=dij.doRun(); 
 			bel = new BellmanFordAlgorithm(dataOne);
 			solBel = bel.doRun();
-			assertEquals(solDij.getPath(),solBel.getPath());*/
-
-			//test chili
-			data = new ShortestPathData (graphs.get(1),graphs.get(1).get(671098),graphs.get(1).get(693296),filters.get(i));
-			dij = new DijkstraAlgorithm(data);
-			solDij=dij.doRun(); 
-			System.out.println("dij fini");
-			bel = new BellmanFordAlgorithm(data);
-			solBel = bel.doRun();
-			System.out.println("bel fini");
 			assertEquals(solDij.getPath(),solBel.getPath());
 
-			/*data = new ShortestPathData (graphs.get(1),graphs.get(1).get(635060),graphs.get(1).get(607248),filters.get(i));
+			//test insa
+			data = new ShortestPathData (graphs.get(1),graphs.get(1).get(272),graphs.get(1).get(1160),filters.get(i));
+			dij = new DijkstraAlgorithm(data);
+			solDij=dij.doRun();
+			bel = new BellmanFordAlgorithm(data);
+			solBel = bel.doRun();
+			assertEquals(solDij.getPath(),solBel.getPath());
+
+			data = new ShortestPathData (graphs.get(1),graphs.get(1).get(1037),graphs.get(1).get(1306),filters.get(i));
 			dij = new DijkstraAlgorithm(data);
 			solDij=dij.doRun(); 
-			assertEquals(solDij.getStatus(),Status.INFEASIBLE);*/
+			assertEquals(solDij.getStatus(),Status.INFEASIBLE);
+			
+			data = new ShortestPathData (graphs.get(1),graphs.get(1).get(301),graphs.get(1).get(301),filters.get(i));
+			dij = new DijkstraAlgorithm(data);
+			solDij=dij.doRun(); 
+			assertEquals(solDij.getStatus(),Status.INFEASIBLE);
+			
+			
 		}
 
 	}
