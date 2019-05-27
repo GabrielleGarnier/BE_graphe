@@ -4,12 +4,12 @@ package org.insa.graph;
 public class Label implements Comparable<Label> {
 	private Node sommetCourant ;
 	private boolean marque;
-	private float cost;
+	private double cost;
 	private Arc pere;
 
 	public Label(Node node) {
 		this.marque=false;
-		this.cost=Float.MAX_VALUE; 
+		this.cost=Double.MAX_VALUE; 
 		this.pere=null; 
 		this.sommetCourant=node;
 	}
@@ -20,13 +20,13 @@ public class Label implements Comparable<Label> {
 
 
 	public int compareTo(Label autre) {
-		return Float.compare(this.getTotalCost(),autre.getTotalCost());
+		return Double.compare(this.getTotalCost(),autre.getTotalCost());
 	}
 
-	public float getCost() {
+	public double getCost() {
 		return this.cost;
 	}
-	public float setCost(float cost) {
+	public double setCost(double cost) {
 		return this.cost=cost; 
 	}
 
@@ -46,7 +46,7 @@ public class Label implements Comparable<Label> {
 		this.marque = marque;
 	}
 	
-	public float getTotalCost() {
+	public double getTotalCost() {
 		return this.cost;
 	}
 }

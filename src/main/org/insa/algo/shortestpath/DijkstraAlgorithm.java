@@ -8,6 +8,7 @@ import org.insa.algo.AbstractSolution.Status;
 import org.insa.algo.utils.BinaryHeap;
 import org.insa.graph.Arc;
 import org.insa.graph.Label;
+import org.insa.graph.Node;
 import org.insa.graph.Path;
 
 public class DijkstraAlgorithm extends ShortestPathAlgorithm {
@@ -61,20 +62,19 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
 		labels[idorigin].setCost(0); 
 		tas.insert(labels[idorigin]); 
 		notifyOriginProcessed(data.getOrigin());
-		//System.out.println("taille tas début : "+tas.size());
 		return labels;
 	}
 	
 	protected void findPath(Label courant, Arc currentSuc,BinaryHeap<Label> tas, Label[] labels) {
-		//System.out.println("arc = "+ currentSuc);
 		int idcurrentSuc=currentSuc.getDestination().getId();
-		if(!labels[idcurrentSuc].isMarque()) {
+		Label labelCurrentSuc = labels[idcurrentSuc];
+		if(!labelCurrentSuc.isMarque()) {
 			notifyNodeReached(currentSuc.getDestination());
-			if (labels[idcurrentSuc].getTotalCost()>(courant.getTotalCost()+currentSuc.getLength())) {
-				labels[idcurrentSuc].setCost(courant.getTotalCost()+currentSuc.getLength());
-				tas.insert(labels[idcurrentSuc]);
-				//System.out.println("taille tas insertion : "+tas.size());
-				labels[idcurrentSuc].setPere(currentSuc);
+			
+			if (labelCurrentSuc.getCost() > (courant.getCost()+data.getCost(currentSuc))) {
+				labelCurrentSuc.setCost(courant.getCost()+data.getCost(currentSuc));
+				tas.insert(labelCurrentSuc);
+				labelCurrentSuc.setPere(currentSuc);
 			}
 		}
 	}
@@ -87,37 +87,30 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
 		int nbNodes=data.getGraph().size();
 		Label[] labels = Init(data, tas, nbNodes);
 
-		boolean tousMarque = false;
+		boolean isReached = false;
 		Label courant;
 		List<Arc> succesors = new ArrayList<Arc>();
 		int iter=0;
-		while(!tousMarque && !tas.isEmpty()) {
+		while(!isReached && !tas.isEmpty()) {
 			iter++;
-			tousMarque=true;
-			int l=0;
-			while(l<nbNodes && tousMarque) {
-				tousMarque=labels[l].isMarque();
-				l++;
-			}
-			if (!tousMarque) {
+			if (!isReached) {
 
 				courant=tas.deleteMin();
 				courant.setMarque(true);
-				if (courant.getSommetCourant()==data.getDestination()) {
-					tousMarque=true;
+				Node nodeCourant =courant.getSommetCourant();
+				if (nodeCourant==data.getDestination()) {
+					isReached=true;
 				} else {
-					notifyNodeMarked(courant.getSommetCourant());
-					System.out.println(courant.getCost());
-					//System.out.println("taille tas apres nouveau node : "+tas.size());
-					succesors=courant.getSommetCourant().getSuccessors();
-					//System.out.println("taille successeurs" + succesors.size());
+					notifyNodeMarked(nodeCourant);
+					succesors=nodeCourant.getSuccessors();
 					for (Arc currentSuc : succesors) {
+						if (!data.isAllowed(currentSuc))
+							continue;
 						findPath(courant, currentSuc, tas, labels);
 					}
 				}
 			}
 		}
-
 		
 		return createSolution(labels, data, iter);
 	}

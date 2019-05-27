@@ -1,19 +1,27 @@
 package org.insa.graph;
 
+import org.insa.algo.AbstractInputData;
+import org.insa.algo.shortestpath.ShortestPathData;
+
 public class LabelStar extends Label implements Comparable<Label> {
 
-	private Node destination;
 	private double costDestination;
-	public LabelStar(Node node, Node destination) {
+	
+	public LabelStar(Node node, ShortestPathData data) {
 		super(node);
-		this.destination= destination;
-		this.costDestination=Point.distance(this.getSommetCourant().getPoint(),this.destination.getPoint());
+		
+		Double dist = Point.distance(this.getSommetCourant().getPoint(),data.getDestination().getPoint());
+		
+		if(data.getMode()==AbstractInputData.Mode.TIME ) {
+			int maxSpeed = Math.max(data.getGraph().getGraphInformation().getMaximumSpeed(), data.getMaximumSpeed());
+			this.costDestination = dist/((double) maxSpeed/3.6);
+		} else {
+		this.costDestination= dist;
+		}
 	}
 
-	public float getTotalCost() {
-		return (float) (this.getCost()+this.costDestination);
+	public double getTotalCost() {
+		return  (this.getCost() + this.costDestination);
 	}
 }
 
-//JeanneBertrand
-//Magnolia_31

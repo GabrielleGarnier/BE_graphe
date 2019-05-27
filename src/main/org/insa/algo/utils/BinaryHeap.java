@@ -159,7 +159,7 @@ public class BinaryHeap<E extends Comparable<E>> implements PriorityQueue<E> {
     }*/
     
     //Complexité o(n) mieux mais pas encore assez
-    public void remove(E x) throws ElementNotFoundException{
+   /* public void remove(E x) throws ElementNotFoundException{
     	ArrayList<E> liste=this.array;  
     	boolean found=false; 
     	int i = 0; 
@@ -180,7 +180,25 @@ public class BinaryHeap<E extends Comparable<E>> implements PriorityQueue<E> {
     			i++; 
     	}
     	if(!found) {throw new ElementNotFoundException(x);}
+    }*/
+    
+    public void remove(E x) throws ElementNotFoundException{
+    	int idElement = this.array.indexOf(x);
+    	
+    	if(this.size()==0 || idElement == -1 || idElement >= this.currentSize) {
+    		throw new ElementNotFoundException(x);
+    	}
+    	
+    	int indexLast= --this.currentSize;
+    	if(idElement <indexLast) {
+    		E lastItem = this.array.get(indexLast);
+    		this.arraySet(idElement, lastItem);
+    		this.percolateUp(idElement);
+    		this.percolateDown(idElement);
+    		
+    	}
     }
+    	
 
     @Override
     public E findMin() throws EmptyPriorityQueueException {

@@ -9,20 +9,21 @@ public class AStarAlgorithm extends DijkstraAlgorithm {
 		super(data);
 	}
 
-
+	@Override
 	protected Label[] Init(ShortestPathData data, BinaryHeap<Label> tas, int nbNodes) {
 		LabelStar[] labelStars=new LabelStar[nbNodes];
 
 		int i;
 		for(i=0;i<nbNodes;i++) {
-			labelStars[i]=new LabelStar(data.getGraph().get(i),data.getDestination());
-			System.out.println(i+" "+labelStars[i].getSommetCourant());
+			labelStars[i]=new LabelStar(data.getGraph().get(i),data);
+			
 		}
 		int idorigin=data.getOrigin().getId(); 
 		labelStars[idorigin].setCost(0);
 		tas.insert(labelStars[idorigin]); 
 		notifyOriginProcessed(data.getOrigin());
-		//System.out.println("taille tas début : "+tas.size());
+		
+		
 		return labelStars;
 	}
 
