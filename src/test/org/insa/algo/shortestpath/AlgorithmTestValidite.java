@@ -1,7 +1,7 @@
 package org.insa.algo.shortestpath;
 
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
@@ -25,11 +25,11 @@ import org.insa.graph.io.GraphReader;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-public class DijkstraAlgorithmTest {
+public class AlgorithmTestValidite {
 
 	List<ArcInspector> filters = ArcInspectorFactory.getAllFilters();
 
-	// Small graph use for tests
+	/*/ Small graph use for tests
 	private static Graph graph;
 
 	// List of nodes
@@ -93,74 +93,78 @@ public class DijkstraAlgorithmTest {
 
 	public void test() {
 		DijkstraAlgorithm dij = new DijkstraAlgorithm(dataImpossible);
-		ShortestPathSolution sol=dij.doRun(); 
+		ShortestPathSolution sol=dij.run(); 
 		assertEquals( sol.getStatus(), Status.INFEASIBLE);
 
 		dij = new DijkstraAlgorithm(dataZero);
-		sol=dij.doRun(); 
+		sol=dij.run(); 
 		assertEquals( sol.getStatus(), Status.INFEASIBLE);
 
 		dij = new DijkstraAlgorithm(dataOne);
-		sol=dij.doRun(); 
+		sol=dij.run(); 
 		assertEquals( sol.getPath(),PathOne);
 
 		dij = new DijkstraAlgorithm(dataTwo);
-		sol=dij.doRun(); 
+		sol=dij.run(); 
 		assertEquals( sol.getPath(),PathTwo);
 
-	}
+	}*/
 
 
 	//String basePath = "/home/commetud/3eme Annee MIC/Graphes-et-Algorithmes/Maps/";
 	String graphPath = "/C:/Users/Jeanne/Desktop/insa/3A/graphes/BE_graphe/";
-	String[] graphNames = { "carre","insa" };
-	
+	String[] graphNames = { "carre","insa", "chile" };
+
+	public void subTest(Graph graph, int origin, int dest, boolean feasible) {
+		ShortestPathSolution solDij;
+		ShortestPathSolution solBel;
+		ShortestPathSolution solAst;
+		DijkstraAlgorithm dij;
+		AStarAlgorithm ast; 
+		BellmanFordAlgorithm bel;
+		ShortestPathData data;
+
+		//une boucle pour tester les trois filtres
+		for (int i=0; i<3; i++) {
+			data = new ShortestPathData (graph,graph.get(origin),graph.get(dest), filters.get(i));
+			dij = new DijkstraAlgorithm(data);
+			ast = new AStarAlgorithm(data);
+			solDij=dij.run(); 
+			solAst=ast.run(); 
+			if (feasible) {
+				bel = new BellmanFordAlgorithm(data);
+				solBel = bel.run();
+				assertEquals(solDij.getPath(),solBel.getPath());
+				assertEquals(solAst.getPath(),solBel.getPath());
+			}else {
+				assertEquals(solDij.getStatus(), Status.INFEASIBLE);
+				assertEquals(solAst.getStatus(), Status.INFEASIBLE);
+			}
+		}
+	}
+
 	@Test
-	public void test_cartes () throws IOException {
+	public void testCartes () throws IOException {
 		List<Graph> graphs = new ArrayList<>();
 		GraphReader reader;
 		for(String path : graphNames) {
 			reader = new BinaryGraphReader(new DataInputStream(new BufferedInputStream(new FileInputStream(graphPath + path + ".mapgr"))));
-
 			graphs.add(reader.read());
 		}
-		ShortestPathSolution solDij;
-		ShortestPathSolution solBel;
-		DijkstraAlgorithm dij;
-		BellmanFordAlgorithm bel;
-		ShortestPathData data;
-
-		for (int i =0; i<2; i++) {
-			//tests carre
-			data = new ShortestPathData (graphs.get(0),graphs.get(0).get(23),graphs.get(0).get(10), filters.get(i));
-			dij = new DijkstraAlgorithm(dataOne);
-			solDij=dij.doRun(); 
-			bel = new BellmanFordAlgorithm(dataOne);
-			solBel = bel.doRun();
-			assertEquals(solDij.getPath(),solBel.getPath());
-
-			//test insa
-			data = new ShortestPathData (graphs.get(1),graphs.get(1).get(272),graphs.get(1).get(1160),filters.get(i));
-			dij = new DijkstraAlgorithm(data);
-			solDij=dij.doRun();
-			bel = new BellmanFordAlgorithm(data);
-			solBel = bel.doRun();
-			assertEquals(solDij.getPath(),solBel.getPath());
-
-			data = new ShortestPathData (graphs.get(1),graphs.get(1).get(1037),graphs.get(1).get(1306),filters.get(i));
-			dij = new DijkstraAlgorithm(data);
-			solDij=dij.doRun(); 
-			assertEquals(solDij.getStatus(),Status.INFEASIBLE);
-			
-			data = new ShortestPathData (graphs.get(1),graphs.get(1).get(301),graphs.get(1).get(301),filters.get(i));
-			dij = new DijkstraAlgorithm(data);
-			solDij=dij.doRun(); 
-			assertEquals(solDij.getStatus(),Status.INFEASIBLE);
-			
-			
-		}
-
+		//test avec carte insa
+		subTest(graphs.get(1),272,1160,true);
+		subTest(graphs.get(1),1037,1306,false);
+		subTest(graphs.get(1),301,301,false);
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
 
 
 
