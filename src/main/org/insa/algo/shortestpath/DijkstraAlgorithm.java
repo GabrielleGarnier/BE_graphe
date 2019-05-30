@@ -12,13 +12,15 @@ import org.insa.graph.Node;
 import org.insa.graph.Path;
 
 public class DijkstraAlgorithm extends ShortestPathAlgorithm {
-
+	private int nbSommets;
+	private static int nbInstance=0; 
 	public DijkstraAlgorithm(ShortestPathData data) {
 		super(data);
+		this.nbSommets=0; 
 	}
 
 	
-	protected ShortestPathSolution createSolution(Label[] labels, ShortestPathData data, int iter) {
+	protected ShortestPathSolution createSolution(Label[] labels, ShortestPathData data) {
 		ShortestPathSolution solution = null;
 		// Destination has no predecessor, the solution is infeasible...
 		if (labels[data.getDestination().getId()].getPere()==null) {
@@ -29,8 +31,6 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
 			// The destination has been found, notify the observers.
 			notifyDestinationReached(data.getDestination());
 
-			System.out.println("nb d'iterations de l'algorithme:"+iter);
-
 			// Create the path from the array of predecessors...
 			ArrayList<Arc> arcs = new ArrayList<>();
 			Arc arc = labels[data.getDestination().getId()].getPere();
@@ -38,14 +38,15 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
 				arcs.add(arc);
 				arc = labels[arc.getOrigin().getId()].getPere();
 			}
-			System.out.println("nb arcs plus court chemin : "+arcs.size());
 			// Reverse the path...
 			Collections.reverse(arcs);
-			System.out.println("1er arc plus court chemin : "+arcs.get(0).getOrigin().getId()+ " to "+arcs.get(0).getDestination().getId());
+			
 			// Create the final solution.
 			solution = new ShortestPathSolution(data, Status.OPTIMAL, new Path(data.getGraph(), arcs));
 
 		}
+		nbInstance++; 
+		System.out.println("instance numéro : "+nbInstance);
 		return solution;
 	}
 	
@@ -71,6 +72,8 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
 		if(!labelCurrentSuc.isMarque()) {
 			notifyNodeReached(currentSuc.getDestination());
 			
+			//incrémentation du nombre de sommets qui est utilisé dans les tests de performance
+			this.nbSommets++; 
 			if (labelCurrentSuc.getCost() > (courant.getCost()+data.getCost(currentSuc))) {
 				labelCurrentSuc.setCost(courant.getCost()+data.getCost(currentSuc));
 				tas.insert(labelCurrentSuc);
@@ -79,6 +82,16 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
 		}
 	}
 	
+	public int getNbSommets() {
+		return nbSommets;
+	}
+
+
+	public void setNbSommets(int nbSommets) {
+		this.nbSommets = nbSommets;
+	}
+
+
 	@Override
 	protected ShortestPathSolution doRun() {
 		
@@ -90,9 +103,8 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
 		boolean isReached = false;
 		Label courant;
 		List<Arc> succesors = new ArrayList<Arc>();
-		int iter=0;
+
 		while(!isReached && !tas.isEmpty()) {
-			iter++;
 			if (!isReached) {
 
 				courant=tas.deleteMin();
@@ -112,7 +124,7 @@ public class DijkstraAlgorithm extends ShortestPathAlgorithm {
 			}
 		}
 		
-		return createSolution(labels, data, iter);
+		return createSolution(labels, data);
 	}
 
 }
