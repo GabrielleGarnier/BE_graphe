@@ -22,10 +22,9 @@ public class PerformanceTest {
 	String graphPath = "/C:/Users/Jeanne/Desktop/insa/3A/graphes/BE_graphe/";
 	String[] graphNames = { "insa" };
 	List<ArcInspector> filters = ArcInspectorFactory.getAllFilters();
-	
-	@Test
+
 	//comparaison A* et Dijkstra avec seulement la carte du Chili (car assez grande pour faire de nombreux trajets différents)
-	public void testPerf() throws IOException{
+	public void testPerf(int filter, String nomFichier) throws IOException{
 		List<Graph> graphs = new ArrayList<>();
 		GraphReader reader;
 		for(String path : graphNames) {
@@ -36,11 +35,11 @@ public class PerformanceTest {
 
 		ArrayList<Integer> origins = new ArrayList<Integer>(); 
 		ArrayList<Integer> destinations = new ArrayList<Integer>();
-		
+
 		//on récupère des points dans le fichier points.txt
 		LireFichier read = new LireFichier(origins, destinations); 
 		read.Lecture("points.txt");
-		
+
 		ArrayList<Resultat> resultats= new ArrayList<Resultat>(); 
 		ShortestPathSolution sol;
 		DijkstraAlgorithm dij;
@@ -48,40 +47,46 @@ public class PerformanceTest {
 		ShortestPathData data;
 		float length; 
 		long t1, t2; 
-		
+
 		for (int i = 0; i<origins.size(); i++) {
 			length = 0.0f; 
 			//avec la carte du chili 
-			data = new ShortestPathData (graphs.get(0),graphs.get(0).get(origins.get(i)),graphs.get(0).get(destinations.get(i)), filters.get(0));
-			
+			data = new ShortestPathData (graphs.get(0),graphs.get(0).get(origins.get(i)),graphs.get(0).get(destinations.get(i)), filters.get(filter));
+
 			//calcul du temps d'éxecution de dijkstra
 			dij = new DijkstraAlgorithm(data); 
 			t1=System.nanoTime(); 
 			sol=dij.doRun(); 
 			t2=System.nanoTime()-t1; 
-			
+
 			//verification de l'existence d'un chemin 
 			if (sol.isFeasible()) {
 				length = sol.getPath().getLength(); 
 			}
 			//création d'un objet resultat pour stocker les informations du test
 			Resultat res = new Resultat(origins.get(i), destinations.get(i), length ,t2,dij.getNbSommets(),t2,dij.getNbSommets());
-			
+
 			//calcul du temps d'execution pour A*
 			ast = new AStarAlgorithm(data); 
 			t1=System.nanoTime(); 
 			ast.doRun(); 
 			t2=System.nanoTime()-t1; 
-			
+
 			//on complete les valeurs manquantes
 			res.setNbSommetsAStar(ast.getNbSommets());
 			res.setTempsAStar(t2);
-			
+
 			//ajout des resultats de ce test à l'ArrayList de tous les resultats
 			resultats.add(res); 
 		}
 		//une fois tous les test effectués, on ecrit les informations dans notre fichier resultats
-		EcrireFichier ecrire = new EcrireFichier("resultats.csv", resultats); 
+		EcrireFichier ecrire = new EcrireFichier(nomFichier, resultats); 
+	}
+	@Test 
+	public void allTests() throws IOException{
+		//on fait les tests de performance en temps et en distance 
+		testPerf(0, "resultats_distance.csv" ); 
+		testPerf(2, "resultats_temps.csv"); 
 	}
 }
 
